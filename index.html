@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fantasy Reading RPG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #1e1e2f; user-select: none; font-family: sans-serif; }
+        .screen { display: none; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; }
+        .screen.active { display: flex; }
+        .magical-bg { background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%); }
+        #gameCanvas { display: block; width: 100%; height: 100%; }
+        #mobile-controls { position: absolute; bottom: 20px; left: 20px; display: grid; grid-template-columns: repeat(3, 60px); grid-gap: 10px; z-index: 100; }
+        .d-btn { width: 60px; height: 60px; background: rgba(255,255,255,0.3); border: 2px solid white; border-radius: 15px; color: white; font-size: 24px; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; touch-action: manipulation; }
+    </style>
+</head>
+<body>
+    <div id="screen-home" class="screen active magical-bg flex-col items-center justify-center p-4">
+        <h1 class="text-4xl text-yellow-400 font-bold mb-8">Quest of Truth</h1>
+        <div class="flex flex-wrap justify-center gap-6">
+            <button onclick="startGame('worrior')" class="bg-white/20 border-4 border-blue-400 rounded-xl p-4">
+                <img src="worrior.png" class="w-24 h-24">
+                <p class="text-white font-bold">Warrior</p>
+            </button>
+            <button onclick="startGame('archer')" class="bg-white/20 border-4 border-green-400 rounded-xl p-4">
+                <img src="archer.png" class="w-24 h-24">
+                <p class="text-white font-bold">Archer</p>
+            </button>
+            <button onclick="startGame('mage')" class="bg-white/20 border-4 border-purple-400 rounded-xl p-4">
+                <img src="mage.png" class="w-24 h-24">
+                <p class="text-white font-bold">Mage</p>
+            </button>
+            <button onclick="startGame('knight')" class="bg-white/20 border-4 border-yellow-400 rounded-xl p-4">
+                <img src="guadian.png" class="w-24 h-24">
+                <p class="text-white font-bold">Knight</p>
+            </button>
+        </div>
+    </div>
+    <div id="screen-game" class="screen bg-black">
+        <canvas id="gameCanvas"></canvas>
+        <div id="mobile-controls">
+            <div></div><div class="d-btn" id="btn-up">↑</div><div></div>
+            <div class="d-btn" id="btn-left">←</div><div class="d-btn" id="btn-down">↓</div><div class="d-btn" id="btn-right">→</div>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const mapImage = new Image(); mapImage.src = 'world-map.png';
+        const images = {
+            'worrior': new Image(), 'archer': new Image(), 
+            'mage': new Image(), 'knight': new Image()
+        };
+        images['worrior'].src = 'worrior.png'; images['archer'].src = 'archer.png';
+        images['mage'].src = 'mage.png'; images['knight'].src = 'guadian.png';
+
+        let isPlaying = false;
+        let selectedChar = 'worrior';
+        const keys = { w:false, a:false, s:false, d:false };
+
+        function startGame(charKey) {
+            selectedChar = charKey;
+            document.getElementById('screen-home').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            isPlaying = true;
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            requestAnimationFrame(gameLoop);
+        }
+
+        let px = 500, py = 500;
+        function gameLoop() {
+            if (!isPlaying) return;
+            if (keys.w) py -= 5; if (keys.s) py += 5;
+            if (keys.a) px -= 5; if (keys.d) px += 5;
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (mapImage.complete) ctx.drawImage(mapImage, 0, 0, 2000, 2000);
+            if (images[selectedChar].complete) ctx.drawImage(images[selectedChar], px, py, 80, 80);
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', (e) => { if (e.key === 'w') keys.w = true; if (e.key === 's') keys.s = true; if (e.key === 'a') keys.a = true; if (e.key === 'd') keys.d = true; });
+        window.addEventListener('keyup', (e) => { if (e.key === 'w') keys.w = false; if (e.key === 's') keys.s = false; if (e.key === 'a') keys.a = false; if (e.key === 'd') keys.d = false; });
+        document.getElementById('btn-up').addEventListener('touchstart', () => keys.w = true);
+        document.getElementById('btn-up').addEventListener('touchend', () => keys.w = false);
+        document.getElementById('btn-down').addEventListener('touchstart', () => keys.s = true);
+        document.getElementById('btn-down').addEventListener('touchend', () => keys.s = false);
+        document.getElementById('btn-left').addEventListener('touchstart', () => keys.a = true);
+        document.getElementById('btn-left').addEventListener('touchend', () => keys.a = false);
+        document.getElementById('btn-right').addEventListener('touchstart', () => keys.d = true);
+        document.getElementById('btn-right').addEventListener('touchend', () => keys.d = false);
+    </script>
+</body>
+</html>
