@@ -9,33 +9,28 @@
         body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
         .screen { display: none; width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; flex-direction: column; align-items: center; justify-content: center; }
         .screen.active { display: flex; }
-        canvas { display: block; background: #222; }
+        #gameCanvas { display: block; background: #222; }
         .btn { border: 2px solid white; padding: 15px 30px; border-radius: 12px; margin: 10px; cursor: pointer; transition: 0.3s; }
         .btn:hover { background: white; color: black; }
     </style>
 </head>
 <body>
 
-    <!-- หน้าเมนู -->
     <div id="screen-login" class="screen active">
         <h1 class="text-4xl font-bold text-yellow-400 mb-8">Quest of Truth</h1>
         <button class="btn" onclick="showScreen('screen-char')">เริ่มเล่นเกม</button>
     </div>
 
-    <!-- หน้าเลือกตัวละคร -->
     <div id="screen-char" class="screen">
-        <h2 class="text-2xl mb-6">เลือกฮีโร่ของคุณ</h2>
+        <h2 class="text-2xl mb-6">เลือกสีตัวละคร</h2>
         <div class="grid grid-cols-2 gap-4">
-            <button class="btn" onclick="startGame('Warrior')">นักรบ (สีแดง)</button>
-            <button class="btn" onclick="startGame('Archer')">นักธนู (สีเขียว)</button>
-            <button class="btn" onclick="startGame('Mage')">นักเวทย์ (สีม่วง)</button>
+            <button class="btn" onclick="startGame('red')">สีแดง</button>
+            <button class="btn" onclick="startGame('green')">สีเขียว</button>
         </div>
     </div>
 
-    <!-- หน้าเล่นเกม -->
     <div id="screen-game" class="screen">
         <canvas id="gameCanvas"></canvas>
-        <p class="mt-4">ใช้ปุ่ม W, A, S, D เพื่อเคลื่อนที่</p>
     </div>
 
     <script>
@@ -48,27 +43,24 @@
             document.getElementById(id).classList.add('active');
         }
 
-        function startGame(type) {
+        function startGame(color) {
             showScreen('screen-game');
-            canvas.width = 600;
-            canvas.height = 400;
-            if(type === 'Warrior') player.color = 'red';
-            if(type === 'Archer') player.color = 'green';
-            if(type === 'Mage') player.color = 'purple';
-            loop();
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            player.color = color;
+            requestAnimationFrame(loop);
         }
 
         window.addEventListener('keydown', (e) => {
             const speed = 20;
-            if (e.key === 'w') player.y -= speed;
-            if (e.key === 's') player.y += speed;
-            if (e.key === 'a') player.x -= speed;
-            if (e.key === 'd') player.x += speed;
+            if (e.key === 'w' || e.key === 'W') player.y -= speed;
+            if (e.key === 's' || e.key === 'S') player.y += speed;
+            if (e.key === 'a' || e.key === 'A') player.x -= speed;
+            if (e.key === 'd' || e.key === 'D') player.x += speed;
         });
 
         function loop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // วาดผู้เล่นเป็นสี่เหลี่ยม
             ctx.fillStyle = player.color;
             ctx.fillRect(player.x, player.y, 40, 40);
             requestAnimationFrame(loop);
